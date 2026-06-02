@@ -1,0 +1,590 @@
+import pandas as pd
+import numpy as np
+import os
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+print("Pandas version:", pd.__version__)
+
+
+titanic_df = sns.load_dataset('titanic').dropna(subset=['age', 'embarked'])
+
+print('Shape:', titanic_df.shape)
+
+print(titanic_df.head())
+print(titanic_df.info())
+print(titanic_df.describe().round(2))
+
+print("Unique embarked values:", titanic_df['embarked'].nunique())
+print("Most common passenger class:", titanic_df['pclass'].mode()[0])
+
+
+
+print('Before dropna():', titanic_df.shape)
+
+fully_cleaned_df = titanic_df.dropna()
+
+print('After dropna():', fully_cleaned_df.shape)
+
+partially_cleaned_df = titanic_df.dropna(subset=['age', 'embarked'])
+
+print('After dropna(subset=[age, embarked]):', partially_cleaned_df.shape)
+
+# Fill missing values
+cleaned_df = titanic_df.copy()
+
+cleaned_df['age'] = cleaned_df['age'].fillna(cleaned_df['age'].mean())
+cleaned_df['embarked'] = cleaned_df['embarked'].fillna(
+    cleaned_df['embarked'].mode()[0]
+)
+
+# Drop deck column
+cleaned_df = cleaned_df.drop(columns=['deck'])
+
+print('Missing values after cleaning:')
+print(cleaned_df.isnull().sum())
+
+
+
+analysis_df = cleaned_df.copy()
+
+male_survivors_highfare = analysis_df[
+    (analysis_df['sex'] == 'male') &
+    (analysis_df['fare'] > 200) &
+    (analysis_df['survived'] == 1)
+]
+
+print(male_survivors_highfare, 'male_survivors_highfare')
+
+selected_rows = analysis_df.iloc[101:109, -3:]
+
+print(selected_rows, 'selected_rows')
+
+avg_fare_by_port = analysis_df.groupby('embarked')['fare'].mean()
+
+print(avg_fare_by_port, "avg_fare_by_port")
+
+survival_count_by_class = (
+    analysis_df.groupby('pclass')['survived']
+    .sum()
+    .sort_values(ascending=False)
+)
+
+print(survival_count_by_class, "survival_count_by_class")
+
+embarked_series = analysis_df['embarked']
+
+port_lookup = {
+    'C': 'Cherbourg',
+    'Q': 'Queenstown',
+    'S': 'Southampton'
+}
+
+port_names = embarked_series.map(port_lookup)
+
+merged_df = analysis_df.merge(
+    port_names,
+    on='embarked',
+    how='left'
+)
+
+print(merged_df[['embarked', 'embark_town']].head(10))
+
+mean_fare = analysis_df['fare'].mean()
+
+print("Mean Fare:", mean_fare)
+
+print(analysis_df['age'].size, 'before')
+
+age_without_nulls = analysis_df['age'].dropna()
+
+print(age_without_nulls.size, 'after_remove')
+
+print(analysis_df.groupby('embarked').size(), "group_size")
+
+
+
+titanic_df = sns.load_dataset('titanic').dropna(
+    subset=['age', 'embarked']
+)
+
+titanic_df['age_group'] = pd.cut(
+    titanic_df['age'],
+    bins=[0, 12, 18, 35, 60, 120],
+    labels=['Child', 'Teen', 'Young Adult', 'Adult', 'Senior']
+)
+
+print('Dataset shape:', titanic_df.shape)
+
+
+
+figure, axis = plt.subplots(figsize=(7, 4))
+
+axis.set_title('Figure title (ax.set_title)', fontsize=14)
+axis.set_xlabel('X-axis label (ax.set_xlabel)')
+axis.set_ylabel('Y-axis label (ax.set_ylabel)')
+
+axis.text(
+    0.5,
+    0.5,
+    'Axes area',
+    transform=axis.transAxes,
+    ha='center',
+    va='center',
+    fontsize=16,
+    color='lightgray'
+)
+
+axis.annotate(
+    'Annotation (ax.annotate)',
+    xy=(0.2, 0.3),
+    xycoords='axes fraction',
+    xytext=(0.5, 0.2),
+    textcoords='axes fraction',
+    arrowprops=dict(arrowstyle='->', color='steelblue'),
+    color='steelblue',
+    fontsize=10
+)
+
+plt.tight_layout()
+plt.show()
+
+
+
+survival_rate_by_class = (
+    titanic_df.groupby('pclass')['survived']
+    .mean()
+    .reset_index()
+)
+
+survival_rate_by_class.columns = [
+    'Class',
+    'Survival Rate'
+]
+
+survival_rate_by_class['Class'] = (
+    survival_rate_by_class['Class']
+    .map({1: '1st', 2: '2nd', 3: '3rd'})
+)
+
+figure, axis = plt.subplots(figsize=(6, 4))
+
+bar_objects = axis.bar(
+    survival_rate_by_class['Class'],
+    survival_rate_by_class['Survival Rate'],
+    color=['tab:blue', 'tab:orange', 'tab:green']
+)
+
+for bar, value in zip(
+    bar_objects,
+    survival_rate_by_class['Survival Rate']
+):
+    axis.text(
+        bar.get_x() + bar.get_width() / 2,
+        bar.get_height() + 0.01,
+        f'{value:.0%}',
+        ha='center',
+        va='bottom',
+        fontsize=11,
+        fontweight='bold'
+    )
+
+axis.set_title('Survival rate by passenger class', pad=12)
+axis.set_xlabel('Passenger class')
+axis.set_ylabel('Survival rate')
+axis.set_ylim(0, 1)
+
+plt.show()
+
+
+
+figure, axis = plt.subplots(figsize=(7, 5))
+
+class_colors = {
+    1: '#1976D2',
+    2: '#43A047',
+    3: '#E53935'
+}
+
+class_labels = {
+    1: '1st class',
+    2: '2nd class',
+    3: '3rd class'
+}
+
+for passenger_class in [1, 2, 3]:
+    class_subset = titanic_df[
+        titanic_df['pclass'] == passenger_class
+    ]
+
+    axis.scatter(
+        class_subset['age'],
+        class_subset['fare'],
+        c=class_colors[passenger_class],
+        alpha=0.5,
+        s=40,
+        edgecolors='white',
+        linewidth=0.3,
+        label=class_labels[passenger_class]
+    )
+
+axis.set_title('Fare vs age by passenger class')
+axis.set_xlabel('Age (years)')
+axis.set_ylabel('Ticket fare (£)')
+axis.legend(title='Class')
+
+axis.set_yscale('log')
+
+highest_fare_index = titanic_df['fare'].idxmax()
+
+axis.annotate(
+    f"Highest fare: £{titanic_df.loc[highest_fare_index, 'fare']:.0f}",
+    xy=(
+        titanic_df.loc[highest_fare_index, 'age'],
+        titanic_df.loc[highest_fare_index, 'fare']
+    ),
+    xytext=(55, 450),
+    arrowprops=dict(arrowstyle='->', color='gray'),
+    fontsize=9,
+    color='gray'
+)
+
+plt.tight_layout()
+plt.show()
+
+
+
+survival_pivot = titanic_df.pivot_table(
+    values='survived',
+    index='pclass',
+    columns='embarked',
+    aggfunc='mean'
+)
+
+figure, axis = plt.subplots(figsize=(6, 4))
+
+sns.heatmap(
+    survival_pivot,
+    annot=True,
+    fmt='.0%',
+    cmap='RdYlGn',
+    linewidths=0.5,
+    ax=axis,
+    vmin=0,
+    vmax=1,
+    cbar_kws={'label': 'Survival rate'}
+)
+
+axis.set_title(
+    'Survival rate by class & embarkation port'
+)
+axis.set_xlabel(
+    'Embarkation port (C=Cherbourg, Q=Queenstown, S=Southampton)'
+)
+axis.set_ylabel('Passenger class')
+
+plt.tight_layout()
+plt.show()
+
+
+
+figure, axis = plt.subplots(figsize=(8, 5))
+
+sns.violinplot(
+    data=titanic_df,
+    x='pclass',
+    y='age',
+    hue='survived',
+    split=True,
+    palette={
+        0: '#EF9A9A',
+        1: '#A5D6A7'
+    },
+    inner='quartile',
+    ax=axis
+)
+
+axis.set_title(
+    'Age distribution by class and survival (violin)'
+)
+axis.set_xlabel('Passenger class')
+axis.set_ylabel('Age (years)')
+
+handles, _ = axis.get_legend_handles_labels()
+
+axis.legend(
+    handles,
+    ['Did not survive', 'Survived'],
+    title='Outcome'
+)
+
+plt.tight_layout()
+plt.show()
+
+
+
+figure, dashboard_axes = plt.subplots(
+    2,
+    2,
+    figsize=(14, 10)
+)
+
+figure.suptitle(
+    'Titanic passenger data — a visual story',
+    fontsize=16,
+    fontweight='bold',
+    y=1.01
+)
+
+# Panel A
+axis = dashboard_axes[0, 0]
+
+survival_rate = titanic_df.groupby(
+    'pclass'
+)['survived'].mean()
+
+axis.bar(
+    ['1st', '2nd', '3rd'],
+    survival_rate.values,
+    color=['#1565C0', '#1976D2', '#90CAF9']
+)
+
+axis.set_title('A. Survival rate by class')
+axis.set_ylabel('Rate')
+
+axis.yaxis.set_major_formatter(
+    plt.FuncFormatter(
+        lambda y, _: f'{y:.0%}'
+    )
+)
+
+# Panel B
+axis = dashboard_axes[0, 1]
+
+axis.hist(
+    titanic_df[titanic_df['survived'] == 0]['age'],
+    bins=25,
+    alpha=0.6,
+    color='#E53935',
+    label='Not survived'
+)
+
+axis.hist(
+    titanic_df[titanic_df['survived'] == 1]['age'],
+    bins=25,
+    alpha=0.6,
+    color='#43A047',
+    label='Survived'
+)
+
+axis.set_title('B. Age distribution by outcome')
+axis.set_xlabel('Age')
+axis.set_ylabel('Count')
+axis.legend(fontsize=8)
+
+# Panel C
+axis = dashboard_axes[1, 0]
+
+for passenger_class, class_color, class_label in zip(
+    [1, 2, 3],
+    ['#1976D2', '#43A047', '#E53935'],
+    ['1st', '2nd', '3rd']
+):
+    class_subset = titanic_df[
+        titanic_df['pclass'] == passenger_class
+    ]
+
+    axis.scatter(
+        class_subset['age'],
+        class_subset['fare'],
+        c=class_color,
+        alpha=0.4,
+        s=20,
+        label=class_label
+    )
+
+axis.set_yscale('log')
+axis.set_title('C. Fare vs age (log scale)')
+axis.set_xlabel('Age')
+axis.set_ylabel('Fare (log)')
+axis.legend(title='Class', fontsize=8)
+
+# Panel D
+axis = dashboard_axes[1, 1]
+
+survival_pivot = titanic_df.pivot_table(
+    values='survived',
+    index='pclass',
+    columns='embarked',
+    aggfunc='mean'
+)
+
+sns.heatmap(
+    survival_pivot,
+    annot=True,
+    fmt='.0%',
+    cmap='RdYlGn',
+    linewidths=0.5,
+    ax=axis,
+    vmin=0,
+    vmax=1,
+    cbar=False
+)
+
+axis.set_title('D. Survival rate: class × port')
+axis.set_xlabel('Port')
+axis.set_ylabel('Class')
+
+plt.tight_layout()
+plt.show()
+
+#
+
+titanic_df = sns.load_dataset('titanic').dropna(
+    subset=['age', 'embarked']
+)
+
+titanic_df['age_group'] = pd.cut(
+    titanic_df['age'],
+    bins=[0, 12, 18, 30, 50, 80],
+    labels=[
+        'Child',
+        'Teen',
+        'Young Adult',
+        'Adult',
+        'Senior'
+    ]
+)
+
+figure, dashboard_axes = plt.subplots(
+    3,
+    2,
+    figsize=(14, 15)
+)
+
+figure.suptitle(
+    'Titanic passenger data — a visual story',
+    fontsize=16,
+    fontweight='bold',
+    y=1.02
+)
+
+# Panel A
+axis = dashboard_axes[0, 0]
+
+survival_rate = titanic_df.groupby(
+    'pclass'
+)['survived'].mean()
+
+axis.bar(
+    ['1st', '2nd', '3rd'],
+    survival_rate.values,
+    color=['#1565C0', '#1976D2', '#90CAF9']
+)
+
+axis.set_title('A. Survival rate by class')
+axis.set_ylabel('Rate')
+
+axis.yaxis.set_major_formatter(
+    plt.FuncFormatter(
+        lambda y, _: f'{y:.0%}'
+    )
+)
+
+# Panel B
+axis = dashboard_axes[0, 1]
+
+axis.hist(
+    titanic_df[titanic_df['survived'] == 0]['age'],
+    bins=25,
+    alpha=0.6,
+    color='#E53935',
+    label='Not survived'
+)
+
+axis.hist(
+    titanic_df[titanic_df['survived'] == 1]['age'],
+    bins=25,
+    alpha=0.6,
+    color='#43A047',
+    label='Survived'
+)
+
+axis.set_title('B. Age distribution by outcome')
+axis.set_xlabel('Age')
+axis.set_ylabel('Count')
+axis.legend(fontsize=8)
+
+# Panel C
+axis = dashboard_axes[1, 0]
+
+for passenger_class, class_color, class_label in zip(
+    [1, 2, 3],
+    ['#1976D2', '#43A047', '#E53935'],
+    ['1st', '2nd', '3rd']
+):
+    class_subset = titanic_df[
+        titanic_df['pclass'] == passenger_class
+    ]
+
+    axis.scatter(
+        class_subset['age'],
+        class_subset['fare'],
+        c=class_color,
+        alpha=0.4,
+        s=20,
+        label=class_label
+    )
+
+axis.set_yscale('log')
+axis.set_title('C. Fare vs age (log scale)')
+axis.set_xlabel('Age')
+axis.set_ylabel('Fare (log)')
+axis.legend(title='Class', fontsize=8)
+
+# Panel D
+axis = dashboard_axes[1, 1]
+
+survival_pivot = titanic_df.pivot_table(
+    values='survived',
+    index='pclass',
+    columns='embarked',
+    aggfunc='mean'
+)
+
+sns.heatmap(
+    survival_pivot,
+    annot=True,
+    fmt='.0%',
+    cmap='RdYlGn',
+    linewidths=0.5,
+    ax=axis,
+    vmin=0,
+    vmax=1,
+    cbar=False
+)
+
+axis.set_title('D. Survival rate: class × port')
+axis.set_xlabel('Port')
+axis.set_ylabel('Class')
+
+# Panel E
+axis = dashboard_axes[2, 0]
+
+sns.countplot(
+    data=titanic_df,
+    x='age_group',
+    hue='sex',
+    palette='Set2',
+    ax=axis
+)
+axis.set_title('E. Passengers by age group & sex')
+axis.set_xlabel('Age Group')
+axis.set_ylabel('Count')
+axis.legend(title='Sex')
+
+# Empty Panel
+dashboard_axes[2, 1].axis('off')
+
+plt.tight_layout(rect=[0, 0, 1, 0.97])
+plt.show()

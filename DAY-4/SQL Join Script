@@ -1,0 +1,15 @@
+import pandas as pd
+import sqlite3
+
+conn = sqlite3.connect(":memory:")
+
+pd.DataFrame({"Host_ID": ["SRV-01", "SRV-02", "SRV-03"], "Role": ["Web Front", "API Gateway", "Database Replica"]}).to_sql('Servers', conn, index=False)
+pd.DataFrame({"Interface_ID": ["eth0", "eth1"], "Mapped_Host": ["SRV-01", "SRV-02"], "IP_Address": ["10.0.0.4", "10.0.0.9"]}).to_sql('Interfaces', conn, index=False)
+
+short_query = """
+SELECT srv_tbl.Host_ID, srv_tbl.Role, inf_tbl.Interface_ID, inf_tbl.IP_Address
+FROM Servers srv_tbl
+LEFT JOIN Interfaces inf_tbl ON srv_tbl.Host_ID = inf_tbl.Mapped_Host;
+"""
+
+print(pd.read_sql_query(short_query, conn))

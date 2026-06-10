@@ -1,0 +1,108 @@
+import argparse
+
+parser = argparse.ArgumentParser(
+    description="User Greeting Utility"
+)
+
+parser.add_argument(
+    "--name",
+    type=str,
+    help="User Name"
+)
+
+parser.add_argument(
+    "--city",
+    type=str,
+    help="City Name"
+)
+
+args = parser.parse_args(
+    args=["--name", "Indhu"]
+)
+
+print(f"Hello {args.name}")
+```
+
+---
+
+## 2. Scheduled Task Automation
+
+```python
+import schedule
+import time
+
+def automated_task():
+    print("Executing scheduled task...")
+
+schedule.every(2).seconds.do(
+    automated_task
+)
+
+for _ in range(5):
+    schedule.run_pending()
+    time.sleep(2)
+3. System Command Automation
+
+```python
+import subprocess
+
+result = subprocess.run(
+    "echo Python Automation Active",
+    capture_output=True,
+    text=True,
+    shell=True
+)
+
+print(result.stdout)
+```
+
+---
+
+## 4. Cron Job Scheduling
+
+```python
+# Linux Terminal Configuration
+
+# Step 1
+# crontab -e
+
+# Step 2
+# */5 * * * * /usr/bin/python3 script.py
+
+print(
+    "Cron scheduler executes tasks automatically."
+)
+```
+
+---
+
+## 5. Integrated Automation Workflow
+
+```python
+import schedule
+import subprocess
+import time
+
+def workflow_task():
+
+    print(
+        "Running automation workflow..."
+    )
+
+    process = subprocess.run(
+        "echo Task Completed Successfully",
+        capture_output=True,
+        text=True,
+        shell=True
+    )
+
+    print(process.stdout)
+
+schedule.every(3).seconds.do(
+    workflow_task
+)
+
+for _ in range(5):
+    schedule.run_pending()
+    time.sleep(3)
+

@@ -1,0 +1,146 @@
+import shutil
+import csv
+import requests
+import smtplib
+
+from pathlib import Path
+from bs4 import BeautifulSoup
+from datetime import datetime
+from email.mime.text import MIMEText
+
+FILE_TYPES = {
+    ".pdf": "Documents",
+    ".jpg": "Images",
+    ".png": "Images",
+    ".csv": "Datasets",
+    ".xlsx": "Datasets",
+    ".mp4": "Videos",
+}
+
+def organize_files(folder_path):
+    source = Path(folder_path)
+
+    for file in source.iterdir():
+
+        if file.is_file():
+
+            destination = source / FILE_TYPES.get(
+                file.suffix.lower(),
+                "Others"
+            )
+
+            destination.mkdir(exist_ok=True)
+
+            shutil.move(
+                str(file),
+                destination / file.name
+            )
+
+            print(
+                f"Moved {file.name} -> {destination.name}"
+            )
+
+# Example
+organize_files("/content/sample_data")
+
+
+def fetch_quotes():
+
+    url = "https://quotes.toscrape.com"
+
+    response = requests.get(
+        url,
+        timeout=10
+    )
+
+    soup = BeautifulSoup(
+        response.text,
+        "html.parser"
+    )
+
+    quote_list = []
+
+    for quote in soup.select(".quote")[:5]:
+
+        quote_list.append(
+            {
+                "quote": quote.find(
+                    "span",
+                    class_="text"
+                ).text,
+
+                "author": quote.find(
+                    "small"
+                ).text,
+
+                "timestamp": datetime.now().isoformat()
+            }
+        )
+
+    return quote_list
+
+
+def save_quotes(data, file_name="quotes_data.csv"):
+
+    with open(
+        file_name,
+        "a",
+        newline=""
+    ) as file:
+
+        writer = csv.DictWriter(
+            file,
+            fieldnames=[
+                "quote",
+                "author",
+                "timestamp"
+            ]
+        )
+
+        writer.writerows(data)
+
+
+quotes = fetch_quotes()
+
+save_quotes(quotes)
+
+print(
+    f"{len(quotes)} quotes saved successfully"
+)
+
+
+def send_email_notification(
+    subject,
+    message,
+    recipient,
+    sender_email,
+    app_password
+):
+
+    email = MIMEText(message)
+
+    email["Subject"] = subject
+    email["From"] = sender_email
+    email["To"] = recipient
+
+    with smtplib.SMTP_SSL(
+        "smtp.gmail.com",
+        465
+    ) as server:
+
+        server.login(
+            sender_email,
+            app_password
+        )
+
+        server.send_message(email)
+
+    print("Email sent successfully")
+
+send_email_notification(
+    subject="Automation Completed",
+    message="File organization and web scraping finished.",
+    recipient="receiver@gmail.com",
+    sender_email="yourbot@gmail.com",
+    app_password="your-app-password"
+)

@@ -1,0 +1,35 @@
+## 1. Topology
+* Use a single central orchestrating agent instead of multiple agents talking to each other[cite: 1, 2].
+* One seller account acts as the primary principal, connecting to various servers as needed[cite: 1, 2].
+* For agencies, use Amazon’s manager-account structure to scale across multiple accounts without added complexity[cite: 1, 2].
+
+## 2. Trust Boundary
+* Keep advertising data within Amazon’s infrastructure as it is secure[cite: 1, 2].
+* The SP-API contains sensitive buyer information and financial settlements, so it must stay within your perimeter[cite: 1, 2].
+* Self-host the SP-API server or use a vendor with verified Amazon data-protection compliance to avoid third-party risks[cite: 1, 2].
+
+## 3. Authorization
+* Apply the principle of least privilege: give tools only the access they strictly require[cite: 1, 2].
+* Use role-based permissions and mint Restricted Data Tokens (RDTs) only for tools that genuinely need buyer PII (e.g., shipping labels)[cite: 1, 2].
+* Isolate credentials for every client account to contain potential security breaches[cite: 1, 2].
+
+## 4. Human-in-the-loop
+* Place human approval gates based on risk rather than technical feasibility[cite: 1, 2].
+* Fully automate read-only tasks like sales and inventory reporting[cite: 1, 2].
+* Automate low-risk reversible writes (e.g., drafting messages) but ensure they are logged[cite: 1, 2].
+* Require explicit human approval for money-related actions like price changes or budget increases[cite: 1, 2].
+* Repricers must have hard-coded human-set price floors and ceilings to prevent margin destruction[cite: 1, 2].
+
+## 5. Transport & State
+* Build tools to respect the asynchronous nature of SP-API reports; do not treat them as synchronous calls[cite: 1, 2].
+* Implement burst-and-restore quota logic to manage rate limits effectively[cite: 1, 2].
+* Use event subscriptions for critical alerts like Buy Box loss or stock drops instead of inefficient polling loops[cite: 1, 2].
+
+## 6. Discovery
+* Use static, pinned servers; do not allow the agent to discover tools dynamically to prevent attack surfaces like prompt injection[cite: 1, 2].
+* Never allow content from untrusted inputs (listings, reviews, messages) to trigger privileged write operations directly[cite: 1, 2].
+
+## 7. Profitability
+* Amazon does not calculate your true net profit[cite: 1, 2].
+* You must join Amazon-provided cost data with your own Cost of Goods Sold (COGS) at the agent level to determine true margin[cite: 1, 2].
+* COGS data must remain entirely seller-controlled and should not be sourced from Amazon APIs[cite: 1, 2].

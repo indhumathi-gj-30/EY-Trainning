@@ -1,0 +1,16 @@
+-----------------------------------------------------------------------------------------
+AGENTIC WORKFLOW ARCHITECTURES (Based on "Orchestration Task (1).txt")
+-----------------------------------------------------------------------------------------
+
+1. Claims Adjudication (Magentic)
+   - Methodology: Centralized orchestration for independent parallel tasks[cite: 1].
+   - Workflow: Claim -> Orchestrator -> [Parallel: Fraud, Coverage, Coding] -> Orchestrator -> Decision[cite: 1].
+
+2. Buyer's Research Assistant (Swarm/Handoff)
+   - Methodology: Agent-to-agent communication to resolve task ambiguity[cite: 1].
+   - Workflow: User Query -> [Research <-> Product <-> Pricing <-> Review] -> Recommendation[cite: 1].
+
+3. RFP Response Builder (Graphflow)
+   - Methodology: Sequential execution with loops for iterative revisions[cite: 1].
+   - Workflow: RFP -> Req Analysis -> [Tech+Price+Compliance -> Review <-> Revise] -> Proposal[cite: 1].
+-----------------------------------------------------------------------------------------

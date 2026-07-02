@@ -1,0 +1,143 @@
+ 1. ANALYTICAL TEST SCENARIO: EARNINGS REPORT REVIEW
+
+To examine the reasoning capabilities of the Claude model lineup, a financial analysis benchmark was conducted using a business-performance evaluation prompt. The objective was to measure each model's ability to move beyond basic data interpretation and identify deeper operational and strategic implications.
+
+### Evaluation Prompt
+
+> "A technology company reports revenue growth of 12% year-over-year, while gross margins decline from 68% to 61%. Operating expenses increase by 31%, and the CFO attributes this to investments in AI infrastructure. The CEO states that growth remains on track. Is this a strong quarter, and what concerns should investors investigate?"
+
+# 2. PERFORMANCE COMPARISON ACROSS MODEL TIERS
+
+Each Claude model demonstrated a distinct level of reasoning sophistication, reflecting differences in scale, contextual understanding, and analytical depth.
+
+### Primary Characteristic
+
+### Observed Behavior
+
+* Focuses mainly on the explicit figures presented in the prompt.
+* Produces a concise overview of revenue growth and cost increases.
+* May classify the quarter as a mixed performance period but rarely explores underlying business implications.
+* Limited ability to challenge management statements or infer long-term consequences.
+
+### Strengths
+
+* Fast response generation
+* Cost-efficient processing
+* Suitable for basic summarization tasks
+* Effective for high-volume routine workloads
+
+---
+
+## Claude Sonnet
+
+### Primary Characteristic
+
+### Observed Behavior
+
+* Recognizes the tension between revenue growth and declining profitability.
+* Highlights margin compression and operating expense expansion.
+* Questions whether AI-related spending is generating proportional value.
+* Demonstrates stronger reasoning than Haiku but remains focused primarily on observable financial indicators.
+
+### Strengths
+
+* Balanced analytical capability
+* Effective business and operational reviews
+* Strong performance for professional knowledge work
+* Good trade-off between speed and reasoning depth
+
+---
+
+## Claude Opus
+
+### Primary Characteristic
+
+
+### Observed Behavior
+
+* Investigates whether elevated spending represents a temporary investment cycle or a structural cost increase.
+* Examines the contrast between management optimism and weakening financial efficiency.
+* Generates targeted follow-up questions for executives and investors.
+* Considers broader strategic risks, future profitability, and sustainability of growth.
+
+### Strengths
+
+* Deep analytical reasoning
+* Strong contextual understanding
+* Advanced business and strategic evaluation capabilities
+* Excellent performance on complex decision-making tasks
+
+---
+
+# 3. RECOMMENDED USE CASES FOR CLAUDE OPUS
+
+Although Haiku and Sonnet are highly effective for many workflows, Claude Opus is particularly valuable when decisions require extensive reasoning, judgment, and synthesis.
+
+## A. Strategic Decision Analysis
+
+Opus performs well when problems involve multiple interconnected variables and competing interpretations. Typical examples include:
+
+* Executive communication analysis
+* Market strategy evaluation
+* Business risk assessment
+* Corporate performance reviews
+* Competitive positioning studies
+
+---
+
+## B. Professional Investigation and Diagnostics
+
+### Financial Analysis
+
+* Earnings call evaluation
+* Margin trend investigation
+* Investment impact assessment
+* Management credibility analysis
+* Long-term profitability forecasting
+
+### Legal Review
+
+* Contract risk identification
+* Regulatory compliance assessment
+* Detection of conflicting obligations
+* Complex agreement interpretation
+
+### Technical Problem Solving
+
+* Complex system troubleshooting
+* Root-cause investigation
+* Architecture-level dependency analysis
+* Multi-system failure diagnosis
+## C. Critical Thinking and Assumption Testing
+
+A key advantage of Opus is its willingness to challenge conclusions rather than simply reinforce them. Instead of accepting management narratives at face value, it evaluates whether available evidence supports those claims and identifies areas requiring further scrutiny.
+
+This capability is especially valuable in environments where objective analysis is more important than agreement with prevailing assumptions.
+
+
+# 4. OVERALL CONCLUSION
+
+For this earnings-analysis scenario, **Claude Opus delivers the strongest performance** among the three model tiers.
+
+## Why Opus Stands Out
+
+* Moves beyond numerical observations to assess strategic implications.
+* Identifies inconsistencies between executive messaging and operational performance.
+* Produces actionable insights rather than descriptive summaries.
+* Generates meaningful investigative questions that can guide investor or analyst discussions.
+* Provides a more comprehensive view of business sustainability and risk.
+
+## Final Recommendation
+
+When tasks involve:
+
+* Financial due diligence
+* Strategic business evaluation
+* Contract and compliance analysis
+* Advanced technical investigations
+* High-stakes decision support
+* Executive-level advisory work
+
+**Claude Opus is the preferred choice**, as it provides the most comprehensive reasoning, strongest critical evaluation, and highest-quality analytical output among the Claude model family.
+
+While Haiku excels in speed and efficiency and Sonnet offers a strong balance between cost and analytical capability, Opus remains the best option for scenarios that demand deep reasoning, rigorous scrutiny, and expert-level insight.

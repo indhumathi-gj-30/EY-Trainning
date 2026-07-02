@@ -1,0 +1,209 @@
+from __future__ import annotations
+from datetime import datetime
+from enum import Enum
+from typing import List, Optional
+from uuid import UUID, uuid4
+
+from pydantic import (
+    BaseModel,
+    EmailStr,
+    Field,
+    field_validator,
+    model_validator,
+    ConfigDict,
+)
+# ─────────────────────────────────────────
+# Enums
+# ─────────────────────────────────────────
+
+class OrderStatus(str, Enum):
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+    CANCELLED = "cancelled"
+
+
+class PaymentMethod(str, Enum):
+    CARD = "card"
+    UPI = "upi"
+    CASH = "cash"
+    WALLET = "wallet"
+
+
+# ─────────────────────────────────────────
+# Level 1 — Leaf Models
+# ─────────────────────────────────────────
+
+class Address(BaseModel):
+    """Physical delivery / billing address."""
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "street": "42 MG Road",
+                "city": "Dehradun",
+                "state": "Uttarakhand",
+                "pincode": "248001",
+                "country": "India",
+            }
+        }
+    )
+
+    street: str = Field(..., min_length=3)
+    city: str
+    state: str
+    pincode: str = Field(..., pattern=r"^\d{6}$")
+    country: str = Field(default="India")
+
+
+class Product(BaseModel):
+    """Catalogue product."""
+
+    id: UUID = Field(default_factory=uuid4)
+    name: str = Field(..., min_length=1)
+    description: Optional[str] = None
+    price: float = Field(..., gt=0)
+    sku: str
+    in_stock: bool = True
+
+    @field_validator("price")
+    @classmethod
+    def price_precision(cls, amount: float) -> float:
+        return round(amount, 2)
+
+
+# ─────────────────────────────────────────
+# Level 2 — Composed Models
+# ─────────────────────────────────────────
+
+class OrderItem(BaseModel):
+    """A product line inside an order — nests Product."""
+
+    product: Product
+    quantity: int = Field(..., ge=1, le=100)
+    discount: float = Field(
+        default=0.0,
+        ge=0.0,
+        le=100.0,
+        description="Discount % (0–100)",
+    )
+
+    @property
+    def line_total(self) -> float:
+        unit_price_after_discount = (
+            self.product.price * (1 - self.discount / 100)
+        )
+        return round(
+            unit_price_after_discount * self.quantity,
+            2,
+        )
+
+
+class Customer(BaseModel):
+    """Buyer — nests Address."""
+
+    id: UUID = Field(default_factory=uuid4)
+    name: str = Field(..., min_length=2)
+    email: EmailStr
+    phone: str = Field(..., pattern=r"^\+?[1-9]\d{9,14}$")
+    shipping_address: Address
+    billing_address: Optional[Address] = None
+
+    @model_validator(mode="after")
+    def set_billing_address(self) -> "Customer":
+        if self.billing_address is None:
+            self.billing_address = self.shipping_address
+        return self
+
+
+# ─────────────────────────────────────────
+# Level 3 — Top-level Order Model
+# ─────────────────────────────────────────
+
+class OrderCreate(BaseModel):
+    """Request body to create a new order."""
+
+    customer: Customer
+    items: List[OrderItem] = Field(..., min_length=1)
+    payment_method: PaymentMethod
+    notes: Optional[str] = None
+
+    @field_validator("items")
+    @classmethod
+    def items_not_empty(
+        cls,
+        order_lines: List[OrderItem],
+    ) -> List[OrderItem]:
+        if not order_lines:
+            raise ValueError(
+                "Order must contain at least one item."
+            )
+        return order_lines
+
+
+class Order(OrderCreate):
+    """Full order as stored — extends OrderCreate with server-assigned fields."""
+
+    id: UUID = Field(default_factory=uuid4)
+    status: OrderStatus = OrderStatus.PENDING
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ─────────────────────────────────────────
+# Level 4 — Extension / Response Model
+# ─────────────────────────────────────────
+
+class OrderSummary(BaseModel):
+    """Computed summary injected into the response."""
+
+    subtotal: float
+    total_discount: float
+    grand_total: float
+    item_count: int
+
+
+class OrderResponse(Order):
+    """
+    Extends Order with a computed summary field.
+    """
+
+    summary: OrderSummary
+
+    @classmethod
+    def from_order(
+        cls,
+        source_order: Order,
+    ) -> "OrderResponse":
+
+        order_items = source_order.items
+
+        gross_amount = sum(
+            item.product.price * item.quantity
+            for item in order_items
+        )
+
+        discount_amount = sum(
+            (item.product.price * item.quantity)
+            - item.line_total
+            for item in order_items
+        )
+
+        final_amount = round(
+            gross_amount - discount_amount,
+            2,
+        )
+
+        return cls(
+            **source_order.model_dump(),
+            summary=OrderSummary(
+                subtotal=round(gross_amount, 2),
+                total_discount=round(discount_amount, 2),
+                grand_total=final_amount,
+                item_count=sum(
+                    item.quantity
+                    for item in order_items
+                ),
+            ),
+        )

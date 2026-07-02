@@ -1,0 +1,73 @@
+# Queue + Service Bus Payment Processing Architecture
+
+
+| Scenario                                  | Pattern               | Reason                                                                                                        |
+| ----------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------- |
+| A. Ledger transaction processing          | Queue                 | Requires reliable processing, retry support, and a dedicated consumer. Suitable for command-driven workflows. |
+| B. Payment completion notification        | Event Bus             | Multiple systems can consume the same event independently using a publish-subscribe model.                    |
+| C. Notification delivery (SMS/Email/Push) | Queue                 | Each notification should be processed once and distributed across worker instances efficiently.               |
+| D. Fraud validation request               | Queue (Request-Reply) | One-to-one communication pattern requiring a specific service to process and return a response.               |
+| E. Customer account update events         | Event Bus             | Different downstream services can react independently to account changes without tight coupling.              |
+| F. Analytics and reconciliation jobs      | Queue                 | Batch-oriented workload requiring task distribution, retries, and scalable processing.                        |
+Decision Criteria
+Use a Queue When:
+
+* A task must be handled by a single consumer.
+* Processing reliability and retries are important.
+* Workload distribution among workers is required.
+* Processing order and delivery guarantees matter.
+
+Use an Event Bus When:
+
+* Multiple services need the same information.
+* Systems should remain loosely coupled.
+* Fan-out communication is required.
+* New consumers may be added without modifying existing services.
+
+A. Ledger Transaction Processing
+
+Classification:Queue
+
+Reason:Requires reliable execution by a dedicated consumer with retry capabilities.
+
+B. Payment Completion Notification
+
+Classification:Event Bus
+
+Reason:Multiple independent systems can subscribe and react to the event.
+
+C. Notification Delivery
+
+Classification:Queue
+
+Reason:Each notification should be processed once while supporting worker-based load distribution.
+
+D. Fraud Validation Request
+
+Classification:Queue
+
+Reason: Uses a request-reply pattern with a single service responsible for processing the request.
+
+ E. Customer Account Update Events
+
+Classification: Event Bus
+
+Reason:Enables multiple downstream services to consume account state changes independently.
+
+### F. Analytics and Reconciliation Jobs
+
+Classification:Queue
+
+Reason:Supports scalable batch processing, retries, and workload balancing.
+
+Queue = Task Processing
+
+* Focuses on executing work.
+* Usually consumed by a single worker/service.
+* Provides reliability and retry mechanisms.
+
+Event Bus = Event Distribution
+
+* Focuses on sharing information.
+* Multiple consumers can react simultaneously.
+* Supports loose coupling and scalability.

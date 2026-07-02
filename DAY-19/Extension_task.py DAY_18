@@ -1,0 +1,132 @@
+import os
+import re
+import json
+import time
+import logging
+import fakeredis
+from typing import Dict, List, Any, Optional
+from anthropic import Anthropic
+from fastapi import FastAPI, HTTPException
+from fastapi.testclient import TestClient
+
+# ---------------------------------------------------------------------------
+# Logging Configuration
+# ---------------------------------------------------------------------------
+def configure_logging():
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    return logging.getLogger("ExtModule")
+
+logger = configure_logging()
+
+# ---------------------------------------------------------------------------
+# Constants and Client Setup
+# ---------------------------------------------------------------------------
+API_ENDPOINT = "claude-sonnet-4-6"
+COMPACT_ENGINE = "claude-haiku-4-5-20251001"
+anthropic_provider = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", "sk-default"))
+
+# ---------------------------------------------------------------------------
+# Backend API Layer (Simulated Services)
+# ---------------------------------------------------------------------------
+app_backend = FastAPI()
+
+_ORD_DATA = {
+    "A1001": {"id": "A1001", "item": "Keyboard", "qty": 1, "status": "shipped"},
+    "A1002": {"id": "A1002", "item": "Hub", "qty": 2, "status": "proc"},
+    "A1003": {"id": "A1003", "item": "Monitor", "qty": 1, "status": "delivered"},
+}
+
+_CUST_DATA = {
+    "C001": {"id": "C001", "name": "Asha", "email": "a@ex.com"},
+    "C002": {"id": "C002", "name": "Ravi", "email": "r@ex.com"},
+}
+
+@app_backend.get("/orders/{oid}")
+def handle_orders(oid: str):
+    res = _ORD_DATA.get(oid.upper())
+    if not res: raise HTTPException(404)
+    return res
+
+@app_backend.get("/customers/{cid}")
+def handle_customers(cid: str):
+    res = _CUST_DATA.get(cid.upper())
+    if not res: raise HTTPException(404)
+    return res
+
+test_engine = TestClient(app_backend)
+
+# ---------------------------------------------------------------------------
+# Core Memory Module (Ext 1 & 2)
+# ---------------------------------------------------------------------------
+class AdvancedMemoryLayer:
+    def __init__(self, redis_db, session_ref):
+        self.r = redis_db
+        self.s = session_ref
+        self.h_ptr = f"log:{session_ref}"
+        self.f_ptr = f"dat:{session_ref}"
+        logger.info(f"Initialized Memory for {session_ref}")
+
+    def log_interaction(self, role, msg):
+        self.r.rpush(self.h_ptr, json.dumps({"role": role, "content": msg}))
+        self.r.ltrim(self.h_ptr, -50, -1)
+
+    def fetch_history(self):
+        data = [json.loads(x) for x in self.r.lrange(self.h_ptr, 0, -1)]
+        if len(data) > 12:
+            return self._execute_compaction(data)
+        return data
+
+    def _execute_compaction(self, data):
+        logger.info("Triggering background compaction...")
+        mid = len(data) // 2
+        segment = data[:mid]
+        # Summarization via cheap model
+        res = anthropic_provider.messages.create(
+            model=COMPACT_ENGINE,
+            max_tokens=250,
+            messages=[{"role": "user", "content": f"Summarize: {segment}"}]
+        )
+        compacted = [{"role": "assistant", "content": f"[Summ]: {res.content[0].text}"}] + data[mid:]
+        self.r.delete(self.h_ptr)
+        for item in compacted: self.r.rpush(self.h_ptr, json.dumps(item))
+        return compacted
+
+    def insert_fact(self, k, v, duration=None):
+        self.r.hset(self.f_ptr, k, v)
+        if duration:
+            self.r.hset(f"{self.f_ptr}:t", k, time.time() + duration)
+            logger.info(f"Fact '{k}' with TTL set.")
+
+    def lookup_fact(self, k):
+        t_val = self.r.hget(f"{self.f_ptr}:t", k)
+        if t_val and time.time() > float(t_val):
+            self.r.hdel(self.f_ptr, k)
+            self.r.hdel(f"{self.f_ptr}:t", k)
+            return None
+        val = self.r.hget(self.f_ptr, k)
+        return val.decode() if val else None
+
+# ---------------------------------------------------------------------------
+# PII Guard Logic (Ext 4)
+# ---------------------------------------------------------------------------
+def scan_sensitive(data: str) -> Optional[str]:
+    card_rx = re.compile(r'\b(?:\d[ -]?){13,19}\b')
+    mail_rx = re.compile(r'\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b')
+    if card_rx.search(data): return "card_number"
+    if mail_rx.search(data): return "email_address"
+    return None
+
+# ---------------------------------------------------------------------------
+# Token Tracking Module (Ext 5)
+# ---------------------------------------------------------------------------
+class ConsumptionAuditor:
+    def __init__(self):
+        self.in_t, self.out_t = 0, 0
+    def register_usage(self, usage):
+        self.in_t += usage.input_tokens
+        self.out_t += usage.output_tokens
+    def finalize(self):
+        logger.info(f"Total Tokens Consumed -> In: {self.in_t}, Out: {self.out_t}")

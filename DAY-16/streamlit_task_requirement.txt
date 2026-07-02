@@ -1,0 +1,15 @@
+# Web Interface Engine
+streamlit>=1.35.0
+
+# LLM & RAG Orchestration Framework
+langchain>=0.2.0
+langchain-community>=0.2.0
+langchain-openai>=0.1.7
+
+# Vector Database & Processing
+faiss-cpu>=1.8.0
+sentence-transformers>=2.7.0
+
+# Core Utilities
+pydantic>=2.7.0
+typing-extensions>=4.11.0

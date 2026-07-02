@@ -1,0 +1,71 @@
+Single Agent, because all activities depend on the same customer information and need to be completed within a short response time.
+
+---------------------------------------------------------
+{Customer Purchase History}
+        ↓
+{Analyze Customer Preferences}
+        ↓
+{Generate Product Recommendations}
+        ↓
+{Apply Business Rules}
+        ↓
+{Create Personalized Email Content}
+        ↓
+{Build Email Template}
+        ↓
+{Send Recommendation Email}
+---------------------------------------------------------
+
+Automated Radiology Report + Care Pathway:
+
+Multi Agent, because multiple independent tasks can be executed simultaneously and later combined into a single final report.
+
+---------------------------------------------------------
+{Medical Scan Input}
+        ↓
+{Parallelly: Generate Diagnostic Report,
+             Validate Patient History,
+             Schedule Follow-up Appointment,
+             Create Doctor & Patient Summary}
+        ↓
+{Consolidate Outputs}
+        ↓
+{Deliver Final Clinical Report}
+---------------------------------------------------------
+
+
+M&A Due Diligence:
+
+Single Agent, because all uploaded documents are interconnected and require a unified analysis before producing the final assessment.
+
+---------------------------------------------------------
+{Documents Uploaded}
+        ↓
+{Review Critical Clauses}
+        ↓
+{Identify Cross-Document Dependencies}
+        ↓
+{Evaluate Risks and Compliance Issues}
+        ↓
+{Prepare Executive Risk Summary}
+---------------------------------------------------------
+
+
+Incident Triage and Auto-Remediation:
+
+Multi Agent, because different diagnostic activities can be performed independently before deciding on corrective actions.
+
+---------------------------------------------------------
+{Alert Generated}
+        ↓
+{Parallelly: Monitor System Metrics,
+             Analyze Application Logs,
+             Verify Database Health}
+        ↓
+{Assess Root Cause}
+        ↓
+{Execute Recovery Action
+ (Rollback / Service Restart)}
+        ↓
+{Generate Incident Analysis Report}
+--------------------------------------------

@@ -1,0 +1,11 @@
+Step 1 :the retrieval component of the RAG pipeline directly influences overall system performance. FAISS provides faster retrieval with lower latency, enabling quick access to documents. However, the retrieved content may not always be the most relevant for the given query.
+
+Step 2:Azure AI Search uses a hybrid retrieval strategy that combines BM25, vector search, and ranking techniques. Although this approach increases retrieval latency, it generally returns more relevant documents, which improves the faithfulness of generated responses.
+
+Step 3:he LLM generation stage contributes the most to latency variation. Queries that require additional processing time often result in longer and more detailed responses.
+
+Step 4:Longer responses typically improve ROUGE scores because they cover a wider range of relevant information. However, BLEU scores may decrease since the generated text can differ from the exact wording used in reference answers.
+
+Step 5 : Higher-quality retrieved documents provide better grounding for the LLM, leading to improved faithfulness scores. Accurate retrieval reduces the likelihood of unsupported or incorrect information in the generated response.
+
+Step 6:The results demonstrate a trade-off between response speed and answer quality. Low-latency systems provide faster responses but may reduce contextual relevance and faithfulness. In contrast, higher-latency systems generally produce more accurate and comprehensive answers, although they require additional processing time.

@@ -1,0 +1,244 @@
+
+# 1. ANALYTICAL TEST SCENARIO: CUSTOMER SUPPORT EXCEPTION HANDLING (TASK 2)
+
+To assess the operational judgment, policy interpretation, and customer-centric reasoning capabilities of the Claude model family, a customer service exception scenario was used. The objective was to determine how effectively each model balances established business policies with long-term customer relationship value.
+
+# 2. PERFORMANCE COMPARISON ACROSS MODEL TIERS
+
+The three Claude model tiers demonstrate noticeably different approaches when handling situations that require balancing policy enforcement against customer retention considerations.
+
+## Claude Haiku
+
+### Primary Characteristic
+
+**Rule-Oriented Resolution**
+
+### Observed Behavior
+
+* Focuses primarily on the stated return policy and the missing receipt.
+* Tends to follow procedural rules with limited consideration of broader customer value.
+* May either deny the request based on policy limits or approve it without fully explaining the business rationale.
+* Often overlooks the significance of the customer's long purchasing history.
+
+### Strengths
+
+* Fast response generation
+* Efficient handling of straightforward support cases
+* Suitable for routine customer service inquiries
+* Consistent policy interpretation
+
+---
+
+## Claude Sonnet
+
+### Primary Characteristic
+
+**Balanced Customer Support Reasoning**
+
+### Observed Behavior
+
+* Identifies that the request exceeds the return window by only a small margin.
+* Recognizes that the purchase can be verified through internal systems despite the missing receipt.
+* Considers both the product defect and the customer's purchasing history.
+* Recommends a reasonable exception while still respecting company policy guidelines.
+
+### Strengths
+
+* Strong balance between policy and customer satisfaction
+* Effective operational decision-making
+* Reliable support-case evaluation
+* Suitable for large-scale customer service workflows
+
+---
+
+## Claude Opus
+
+### Primary Characteristic
+
+**Strategic Customer Lifetime Value Analysis**
+
+### Observed Behavior
+
+* Evaluates the situation through both customer experience and business-retention perspectives.
+* Recognizes the importance of a six-year customer relationship with twenty-three successful purchases.
+* Weighs the minor policy violation against the long-term value of maintaining customer trust.
+* Produces a concise and persuasive justification for approving the exception while reinforcing brand loyalty.
+
+### Strengths
+
+* Advanced customer-centric reasoning
+* Strong understanding of retention economics
+* Excellent business judgment
+* Superior contextual decision-making capabilities
+
+---
+
+# 3. WHY CLAUDE OPUS EXCELS IN THIS SCENARIO
+
+While all three models can address the request, Claude Opus demonstrates the highest level of commercial reasoning and customer relationship awareness.
+
+## Customer Retention Perspective
+
+Opus recognizes that the cost of accommodating a loyal customer is often significantly lower than the cost of losing future business. Rather than focusing solely on the two-day policy violation, it evaluates the broader business impact of the decision.
+
+## Contextual Decision-Making
+
+The model successfully incorporates multiple variables simultaneously:
+
+* Verified purchase history
+* Product defect claim
+* Customer loyalty duration
+* Number of previous orders
+* Minimal policy deviation
+* Brand reputation considerations
+
+## Communication Quality
+
+Opus is capable of delivering a well-structured response within the requested one-paragraph format while maintaining clarity, empathy, and sound business reasoning.
+
+# 4. OVERALL CONCLUSION
+
+For this customer support exception-handling scenario, **Claude Opus delivers the strongest overall performance**, with Claude Sonnet serving as a highly effective alternative for large-scale operational deployments.
+
+## Why Opus Stands Out
+
+* Integrates customer empathy with business strategy.
+* Prioritizes long-term customer retention over rigid policy enforcement when appropriate.
+* Understands the significance of customer lifetime value.
+* Produces practical, brand-aligned decisions supported by clear reasoning.
+* Maintains policy awareness without sacrificing customer experience.
+
+## Final Recommendation
+
+* Customer experience strategies
+* VIP customer support workflows
+* Escalation and exception-handling policies
+* Customer retention programs
+* Service quality and training framework
+
+* High-volume support environments
+* Automated agent assistance
+* Operational customer service workflows
+* Cost-efficient decision support systems
+
+# 1. ANALYTICAL TEST SCENARIO: CLINICAL DOCUMENTATION AND RISK IDENTIFICATION (TASK 3)
+
+To evaluate the healthcare reasoning, patient-safety awareness, and documentation-risk detection capabilities of the Claude model family, a clinical chart review scenario was conducted. The objective was to determine how effectively each model could interpret medical shorthand, identify potential diagnostic concerns, and recognize documentation practices that may create legal or compliance exposure.
+
+# 2. PERFORMANCE COMPARISON ACROSS MODEL TIERS
+
+The three Claude model tiers demonstrate significant differences when handling healthcare-related information, particularly in situations involving patient safety, clinical decision-making, and documentation quality.
+
+## Claude Haiku
+
+### Primary Characteristic
+
+**Basic Medical Note Interpretation**
+
+### Observed Behavior
+
+* Efficiently expands common medical abbreviations and summarizes the note.
+* Identifies key clinical events such as chest pain, EKG findings, discharge instructions, and medication provided.
+* Primarily focuses on descriptive summarization rather than deeper risk assessment.
+* May not sufficiently emphasize missing diagnostic evaluations or documentation concerns.
+
+### Strengths
+
+* Fast medical note summarization
+* Accurate interpretation of common shorthand terminology
+* Useful for routine documentation reviews
+* Efficient processing of structured clinical text
+
+### Primary Characteristic
+
+**Clinical Risk Recognition**
+
+### Observed Behavior
+
+* Moves beyond summarization and begins identifying potential patient-safety concerns.
+* Flags the absence of additional cardiac evaluation despite the presentation of chest pain.
+* Recognizes that discharge decisions may require further clinical justification.
+* Notes documentation concerns but typically provides limited discussion of broader legal implications.
+
+### Strengths
+
+* Strong clinical reasoning capability
+* Effective identification of compliance concerns
+* Balanced healthcare analysis
+* Suitable for operational clinical review workflows
+
+
+### Primary Characteristic
+
+**Comprehensive Medical and Documentation Analysis**
+
+### Observed Behavior
+
+* Evaluates the note from both patient-safety and risk-management perspectives.
+* Highlights the importance of fully assessing potentially serious causes of chest pain before discharge.
+* Examines whether available documentation sufficiently supports the clinical decision-making process.
+* Identifies documentation language that could raise quality-assurance, compliance, or legal concerns.
+* Provides a broader assessment of both clinical and organizational risk exposure.
+
+### Strengths
+
+* Advanced healthcare reasoning
+* Strong contextual understanding
+* Comprehensive risk evaluation
+* High-quality medical documentation review
+* Superior analytical depth in complex scenarios
+
+# 3. WHY CLAUDE OPUS EXCELS IN THIS SCENARIO
+
+Although all three models can summarize the clinical note, Claude Opus demonstrates the highest level of analytical sophistication when evaluating both healthcare quality and documentation standards.
+
+## Patient Safety Perspective
+
+Opus recognizes that chest pain can represent a potentially serious medical complaint requiring careful evaluation and documentation. Rather than focusing solely on the information recorded, it assesses whether important clinical considerations have been adequately addressed.
+
+## Documentation Quality Perspective
+
+The model evaluates not only what was documented but also how the documentation may be interpreted during future reviews, audits, or investigations. This broader perspective helps identify areas where documentation quality could be strengthened.
+
+## Integrated Risk Assessment
+
+Opus combines multiple dimensions of analysis, including:
+
+* Clinical presentation
+* Diagnostic evaluation
+* Discharge planning
+* Documentation quality
+* Risk management considerations
+* Patient safety implications
+
+This multi-layered reasoning enables a more comprehensive assessment than basic summarization alone.
+
+# 4. OVERALL CONCLUSION
+
+For this clinical documentation and risk-identification scenario, **Claude Opus delivers the most comprehensive and reliable performance** among the Claude model tiers.
+
+## Why Opus Stands Out
+
+* Integrates clinical reasoning with documentation analysis.
+* Identifies potential patient-safety concerns with greater depth.
+* Evaluates the completeness and quality of clinical records.
+* Recognizes broader compliance and risk-management considerations.
+* Produces actionable insights rather than simple summaries.
+
+## Final Recommendation
+
+Use **Claude Opus** when developing or supporting:
+
+* Clinical quality assurance programs
+* Medical documentation reviews
+* Healthcare risk assessment workflows
+* Compliance and audit preparation
+* Clinical decision-support evaluations
+* Patient-safety monitoring initiatives
+
+Use **Claude Sonnet** for:
+
+* Routine clinical documentation review
+* Operational healthcare workflows
+* Medical summarization tasks requiring balanced reasoning
+* Cost-effective support for healthcare teams

@@ -1,0 +1,26 @@
+=========================================================================================
+Scenario 7 of 8 - COMPARATIVE ANALYSIS ORCHESTRATION PATTERNS
+=========================================================================================
+
+1. Claims Adjudication (Magentic)
+   - Methodology: Centralized orchestration for concurrent, independent tasks[cite: 1].
+   - Operational Logic: A master controller manages individual streams like Fraud Screening, 
+     Policy Coverage, and Medical-Coding Review[cite: 1]. 
+   - Advantage: Eliminates dependency issues by running processes in parallel, ensuring 
+     faster synthesis of the final adjudication decision[cite: 1].
+
+2. Buyer's Research Assistant (Selector)
+   - Methodology: Dynamic routing orchestrated by a central decision-maker[cite: 3].
+   - Operational Logic: The system evaluates the query and routes it to the specific specialist 
+     agent needed, such as Trend Research, Supplier Lookup, or Market Analysis[cite: 3].
+   - Advantage: Offers high adaptability for ambiguous tasks where the exact workflow 
+     cannot be predefined, ensuring optimal resource allocation[cite: 3].
+
+3. RFP Response Builder (Graphflow)
+   - Methodology: Predictable, sequential execution with conditional feedback loops[cite: 2].
+   - Operational Logic: Manages a structured path involving Technical, Pricing, Compliance, 
+     and Timeline segments[cite: 2]. Includes a formal review step where segments are 
+     returned for rework if quality benchmarks are not met[cite: 2].
+   - Advantage: Ideal for high-stakes documentation requiring rigorous quality control and 
+     strict step-by-step adherence before final approval[cite: 2].
+=========================================================================================

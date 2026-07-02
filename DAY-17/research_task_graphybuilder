@@ -1,0 +1,116 @@
+import operator
+from typing import Annotated, List, TypedDict, Literal
+from pydantic import BaseModel, Field
+from langchain_groq import ChatGroq
+from langchain_community.tools.tavily_search import TavilySearchResults
+from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
+
+class AnalystPipelineState(TypedDict):
+    """Dynamic context dictionary passing transient values through processing grid nodes."""
+    objective_target: str
+    curated_intelligence: Annotated[List[str], operator.add]
+    synthesized_brief: str
+    allocated_route: str
+    exception_tally: int
+    compliance_directives: str
+
+
+class OrchestrationRouter(BaseModel):
+    """Structured response schema forcing governance engine to yield deterministic route signals."""
+    target_specialist: Literal["market_scanner", "content_compositor", "TERMINATION_GATE"] = Field(
+        description="The target worker state allocation indicator."
+    )
+    operational_orders: str = Field(description="Strategic directives and tasks mapped for the target node.")
+    requires_human_signoff: bool = Field(description="If True, pauses state machine for administrative audit verification.")
+
+
+# ──────────────────────────────────────────────────────────────────────
+# 2. INTEL ENGINE CONNECTOR CORE
+# ──────────────────────────────────────────────────────────────────────
+
+# Initializing structural models (Credentials pulled natively from system environment variables)
+agentic_brain = ChatGroq(model_name="llama-3.3-70b-versatile", temperature=0)
+search_intelligence_tool = TavilySearchResults(k=2)
+
+
+# ──────────────────────────────────────────────────────────────────────
+# 3. SPECIALIZED MULTI-AGENT COMPUTE NODES
+# ──────────────────────────────────────────────────────────────────────
+
+def market_scanner(state: AnalystPipelineState):
+    """Data Gatherer Agent: Queries web indices to cache real-time metrics into transient pipeline memory."""
+    query = state["objective_target"]
+    raw_telemetry = search_intelligence_tool.invoke(query)
+    return {"curated_intelligence": [str(raw_telemetry)], "exception_tally": 0}
+
+
+def content_compositor(state: AnalystPipelineState):
+    """Synthesis Executive Agent: Compiles raw structural telemetry records into formal enterprise reports."""
+    grounded_context = "\n".join(state["curated_intelligence"])
+    completion = agentic_brain.invoke(
+        f"Write a detailed, well-structured financial analysis report on '{state['objective_target']}' "
+        f"utilizing the following research telemetry parameters:\n\n{grounded_context}"
+    )
+    return {"synthesized_brief": completion.content}
+
+
+def governance_supervisor(state: AnalystPipelineState):
+    """Master Router Node: Reviews system parameters and context vectors to compute future execution edges."""
+    structured_auditor = agentic_brain.with_structured_output(OrchestrationRouter)
+    
+    audit_prompt = f"""
+    Corporate Analytical Task: {state['objective_target']}
+    Intelligence Notes Cached: {len(state['curated_intelligence'])} records.
+    Active Report Segment: {state['synthesized_brief'][:100]}...
+    
+    COMPLIANCE DIRECTION: If 'curated_intelligence' list contains background research data records, 
+    you must explicitly set target_specialist to 'content_compositor'.
+    """
+    compliance_verdict = structured_auditor.invoke(audit_prompt)
+    return {
+        "allocated_route": compliance_verdict.target_specialist,
+        "compliance_directives": compliance_verdict.operational_orders,
+    }
+
+
+# ──────────────────────────────────────────────────────────────────────
+# 4. RUNTIME SYSTEM BUILDER CONSTRUCTOR
+# ──────────────────────────────────────────────────────────────────────
+
+def build_graph():
+    """Compiles individual processing agents, binds conditional workflows, and embeds checkpoint memories."""
+    # Instantiating base layout workflow state manager
+    orchestration_graph = StateGraph(AnalystPipelineState)
+
+    # Registering functional active execution vectors
+    orchestration_graph.add_node("governance_supervisor", governance_supervisor)
+    orchestration_graph.add_node("market_scanner", market_scanner)
+    orchestration_graph.add_node("content_compositor", content_compositor)
+
+    # Locking entry point validation gate
+    orchestration_graph.set_entry_point("governance_supervisor")
+
+    # Mapping dynamic conditional edge parameters
+    orchestration_graph.add_conditional_edges(
+        "governance_supervisor",
+        lambda dynamic_state: dynamic_state["allocated_route"],
+        {
+            "market_scanner": "market_scanner", 
+            "content_compositor": "content_compositor", 
+            "TERMINATION_GATE": END
+        },
+    )
+
+    # Direct static pipeline loopback sequences
+    orchestration_graph.add_edge("market_scanner", "governance_supervisor")
+    orchestration_graph.add_edge("content_compositor", "governance_supervisor")
+
+    # Constructing persistent layer and setting explicit verification breakpoints
+    runtime_checkpoint_saver = MemorySaver()
+    compiled_framework = orchestration_graph.compile(
+        checkpointer=runtime_checkpoint_saver,
+        interrupt_before=["content_compositor"],  # CRITICAL INTERRUPT: Pauses system state for audit prior to generation
+    )
+    
+    return compiled_framework

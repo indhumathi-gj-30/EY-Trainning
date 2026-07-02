@@ -1,0 +1,89 @@
+Azure Architecture Design for Healthcare Portals, APIs, and Medical Imaging Systems
+
+Requirement Analysis
+
+| Component                      | Recommended Service | Reason                                                                                               |
+| ------------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------- |
+| Patient Portal                 | Application Gateway | Requires URL-based routing, SSL offloading, and WAF protection against common web attacks.           |
+| Internal Clinical API          | Load Balancer       | Handles internal TCP traffic with minimal latency and does not require application-level inspection. |
+| Authentication Platform        | Application Gateway | Uses HTTP header inspection (`X-Trust-ID`) for tenant-specific routing and secure TLS communication. |
+| Legacy Laboratory SOAP Service | Load Balancer       | Internal TCP-based service requiring only failover capability without payload modification.          |
+| Administration Portal          | Application Gateway | Supports hostname-based routing, HTTPS termination, and backend autoscaling.                         |
+| Medical Imaging (DICOM)        | Load Balancer       | Transfers large TCP image streams and requires connection persistence without Layer 7 processing.    |
+
+Service Selection Principle
+
+Application Gateway should be selected whenever traffic requires HTTP/HTTPS intelligence such as URL routing, hostname routing, header inspection, SSL termination, or Web Application Firewall protection.
+
+Load Balancer is the preferred choice for TCP/UDP workloads that need fast packet forwarding, low latency, session persistence, or simple redundancy without traffic inspection.
+1. Patient Portal → Application Gateway
+
+The patient-facing portal receives HTTPS traffic from external users. Application Gateway performs SSL termination and protects the application using Web Application Firewall (WAF). It also routes requests according to URL patterns. Requests directed to `/api/*` are forwarded to API services, while `/static/*` requests are sent to storage resources. Since URL inspection is required, a Layer 7 solution is necessary.
+
+2. Internal Clinical API → Load Balancer
+
+Clinical systems communicate using TCP port 8443 within a private virtual network. Since there is no requirement for URL processing, security inspection, or HTTP-aware routing, Azure Load Balancer efficiently distributes traffic across backend servers while maintaining extremely low latency.
+
+3. DICOM Medical Imaging Service → Load Balancer
+
+Medical imaging systems transfer large DICOM files ranging from tens to hundreds of megabytes. These workloads use long-lived TCP sessions that must remain connected to the same backend server during the entire transfer. Azure Load Balancer provides session persistence and high-performance traffic distribution without interfering with the data stream.
+
+4. Authentication Service → Application Gateway
+
+Authentication requests include a custom `X-Trust-ID` header used to identify individual healthcare trusts. Application Gateway examines this header and routes traffic to the corresponding backend authentication cluster. It also supports secure end-to-end TLS communication. Because routing decisions depend on HTTP headers, Layer 7 processing is required.
+
+5. Legacy SOAP Laboratory Service → Load Balancer
+
+The laboratory application operates over TCP port 9090 and is accessed only within the internal network. Vendor restrictions prohibit any modification of SOAP messages or transport headers. The primary requirement is high availability, where traffic automatically switches to a healthy server if one instance becomes unavailable. Azure Load Balancer fulfills this requirement with minimal complexity.
+
+6. Administrative Dashboard → Application Gateway
+
+The organization hosts both the public website and the administrative dashboard using a single public IP address. Application Gateway performs hostname-based routing, directing requests for the admin subdomain to dedicated backend servers while sending public website traffic to a separate pool. HTTPS support and autoscaling capabilities make Application Gateway the ideal choice.
+
+Key Decision Summary Application Gateway (Layer 7)
+
+Used when advanced HTTP/HTTPS functionality is required:
+
+* Patient Portal
+
+  * URL path routing
+  * SSL termination
+  * Web Application Firewall
+
+* Authentication Service
+
+  * Header-based routing
+  * Multi-tenant request handling
+  * End-to-end encryption
+
+* Administrative Dashboard
+
+  * Hostname-based routing
+  * Multiple applications on one public IP
+  * HTTPS support and autoscaling
+
+Load Balancer (Layer 4)
+
+Used when traffic forwarding is sufficient without application-layer awareness:
+
+* Internal Clinical API
+
+  * Pure TCP communication
+  * Internal network traffic
+  * Low-latency load distribution
+
+* DICOM Imaging Service
+
+  * Large TCP data transfers
+  * Session persistence
+  * No HTTP processing required
+
+* Legacy SOAP Laboratory Service
+
+  * Internal TCP workload
+  * No payload modification allowed
+  * Simple failover and redundancy
+
+Conclusion
+
+The architecture uses Application Gateway for workloads that require intelligent HTTP routing and security controls, while Azure Load Balancer is deployed for high-performance TCP services that only require efficient traffic distribution and availability. This approach provides the optimal balance between security, scalability, performance, and operational simplicity within a healthcare environment.

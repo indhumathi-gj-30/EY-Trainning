@@ -1,0 +1,82 @@
+OPERATIONAL LOGGING & MONITORING DECISION REPORT
+
+Ticket Prompt:
+"A request failed in staging. Display the complete execution path and identify the failure point."
+
+Recommended Source:
+Trace / Spans
+
+Reasoning:
+
+1. Transaction-Level Visibility:
+   The request focuses on a single execution flow. Distributed traces are designed to follow one transaction across multiple services, while audit logs capture broader system activities.
+
+2. End-to-End Execution Mapping:
+   A complete call path requires visibility into service interactions. Parent-child spans naturally represent these relationships and provide a structured execution timeline.
+
+3. Root Cause Identification:
+   The primary objective is determining where the request failed. Trace data records latency, exceptions, and execution boundaries, making it the preferred debugging mechanism.
+
+===============================================================================
+SCENARIO 05 / 08 : FINOPS COST & TOKEN ANALYTICS
+===============================================================================
+
+Ticket Prompt:
+"Display average token usage and request cost on a live dashboard. A 10% sample rate is acceptable."
+
+Recommended Source:
+Trace / Spans
+
+Reasoning:
+
+1. Operational Metrics Collection:
+   Token consumption, latency, and cost-related measurements are typically stored as tracing attributes and span metadata.
+
+2. Sampling Compatibility:
+   Since a 10% sample rate is acceptable, tracing systems are an ideal fit because they commonly support configurable sampling strategies to reduce telemetry overhead.
+
+3. Monitoring Objective:
+   The requirement centers around real-time operational insights and trend analysis rather than regulatory evidence or compliance retention.
+
+===============================================================================
+SCENARIO 06 / 08 : IMMUTABLE SECURITY RECORD
+===============================================================================
+
+Ticket Prompt:
+"Ensure this decision record cannot be modified, even by privileged database administrators years later."
+
+Recommended Source:
+Audit Log
+
+Reasoning:
+
+1. Tamper Resistance:
+   The critical requirement is preventing unauthorized modification. Audit logs are designed as append-only records with integrity protections that help detect or prevent alteration attempts.
+
+2. Long-Term Preservation:
+   The record must remain trustworthy for several years. Audit systems are built for extended retention periods, whereas traces are generally maintained for shorter operational windows.
+
+3. Governance Requirement:
+   This scenario serves compliance, security, and regulatory needs rather than application troubleshooting, making audit logging the appropriate solution.
+
+===============================================================================
+SCENARIO 08 / 08 : COMPLIANCE + INCIDENT RESPONSE
+===============================================================================
+
+Ticket Prompt:
+"A suspicious transaction was blocked. Compliance needs proof of enforcement, while the on-call engineer must investigate why the rule triggered."
+
+Recommended Source:
+Audit Log + Trace Correlation
+
+Reasoning:
+
+1. Compliance Requirement:
+   A permanent and reliable record must exist to demonstrate that the security control executed correctly. This information belongs in the audit logging system.
+
+2. Engineering Requirement:
+   Incident responders need detailed execution context, rule evaluation flow, request timing, and processing behavior. Trace data provides this level of diagnostic visibility.
+
+3. Unified Investigation Model:
+   Both records should reference a common identifier such as a trace_id. This allows teams to connect compliance evidence with operational diagnostics during investigations.
+

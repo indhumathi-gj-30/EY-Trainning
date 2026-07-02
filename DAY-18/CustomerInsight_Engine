@@ -1,0 +1,52 @@
+1. ARCHITECTURAL CHOICE: SINGLE AGENT
+-------------------------------------
+A Single Agent architecture is the most suitable approach for this scenario because:
+
+- Unified Customer Context: Every stage of the workflow depends on the same customer profile, purchase records, and browsing activity.
+- Low Response Time Requirement: The recommendation process must complete quickly, making a lightweight architecture more effective.
+- Sequential Processing Flow: Each activity naturally follows the previous one, eliminating the need for agent-to-agent coordination.
+- Operational Simplicity: A single execution flow reduces communication overhead and simplifies system management.
+
+2. WORKFLOW DESIGN
+------------------
+
+---------------------------------------------------------
+{Customer Activity Data}
+        ↓
+{Retrieve Purchase and Browsing History}
+        ↓
+{Analyze Customer Interests}
+        ↓
+{Generate Product Recommendations}
+        ↓
+{Apply Inventory and Business Rules}
+        ↓
+{Create Personalized Email Message}
+        ↓
+{Build Final Email Template}
+        ↓
+{Deliver Recommendation Email}
+---------------------------------------------------------
+
+
+3. PROCESS STAGES
+-----------------
+
+Stage 1 – Customer Data Collection
+- Gather recent purchase records and browsing behavior.
+
+Stage 2 – Recommendation Generation
+- Identify products that align with customer interests and preferences.
+
+Stage 3 – Business Rule Validation
+- Remove unavailable products and filter items that do not meet business requirements.
+
+Stage 4 – Personalized Content Creation
+- Generate customer-specific messaging to improve engagement.
+
+Stage 5 – Email Construction and Delivery
+- Assemble recommendation content into the final email format and prepare it for distribution.
+
+4. EXPECTED OUTCOME
+-------------------
+The Single Agent architecture provides a streamlined recommendation workflow, faster execution, reduced operational complexity, and a consistent personalized experience for every customer.

@@ -1,0 +1,30 @@
+| Dimension | Trace / Spans | Audit Log |
+
+| Primary Question | How did it run? Where's the latency? | Who did what? Prove it. |
+| Data Density | Sampled (typically ~10%) | Exhaustive (captured 100%) |
+| Integrity | Mutable (can be cleared/pruned) | Append-only (tamper-evident/WORM) |
+| Retention | Transient (hours to weeks) | Long-term (months to years) |
+| Core Audience | SRE, Developers, FinOps | Compliance, Legal, Security |
+| Architecture | OpenTelemetry spans | Signed / hash-chained sink |
+
+### Scenario A: Troubleshooting a Failed Operation
+**"I need to see the full call tree for a failed request to pinpoint exactly where the error occurred."**
+**Choice: Trace / Spans**
+Rationale: This task requires analyzing the "how" and "where" of execution. By leveraging the hierarchical request structure of Trace / Spans, you can visually isolate the specific span that failed.
+
+### Scenario B: Operational Metric Reporting
+**"The Finance team needs average cost/token usage for a dashboard. 10% sampling is perfectly fine."**
+**Choice: Trace / Spans**
+Rationale: When sampling is acceptable, you are dealing with operational metrics rather than legal evidence. Since Trace / Spans are built for this type of performance analysis, they are the ideal choice for FinOps dashboards[cite: 1].
+
+### Scenario C: Long-term Data Integrity
+**"We need a record of a critical decision that must remain un tampered for three years."**
+**Choice: Audit Log**
+Rationale: This demands the tamper-evident security of an Audit Log. Because it uses an append-only, hash-chained structure, any attempt at unauthorized alteration is immediately detectable, unlike the more transient nature of traces[cite: 1].
+
+### Scenario D: Mixed-Need Forensic Investigation
+**"A guardrail blocked a transaction. We need to prove the block happened (for compliance) and understand why it fired (for engineering)."**
+**Choice: Both**
+Rationale: You need a hybrid approach to satisfy both needs[cite: 1]:
+* The Audit Log provides the immutable, permanent record required by compliance[cite: 1].
+* The Trace / Spans (linked via `trace_id`) provide the runtime diagnostics needed by the on-call team to debug the specific trigger[cite: 1].

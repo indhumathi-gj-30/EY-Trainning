@@ -1,0 +1,57 @@
+Step 1: When a customer email is received, the system reads the content and identifies the type of request using an LLM. The email can be categorized into areas such as billing, refund, technical support, account access, subscription, or general inquiries.
+
+Step 2: Company policies, FAQs, and support documents are stored in a vector database. Based on the customer query, the system retrieves the most relevant information using a RAG pipeline.
+
+Step 3: The customer email and retrieved documents are provided to the LLM. Using this information, the system generates a response draft that follows company policies and addresses the customer's issue.
+
+Step 4: The generated response is reviewed to determine whether the answer is reliable and complete. A confidence score is calculated to measure how well the response matches the customer's request.
+
+Step 5:If the confidence score is low or the issue requires manual attention, the system creates a support ticket and forwards the case to a human support agent for further handling.
+
+Reason for Choosing LangGraph and LangChain:
+
+LangGraph helps manage the overall workflow and controls the movement between different stages. It supports decision-making steps such as whether to send a response or escalate the issue.
+
+LangChain provides integrations for LLMs, vector databases, document retrieval, prompt management, and external APIs. Together, they help build an automated customer support solution while allowing human intervention when required.
+
+High-Level Workflow
+
+1. Customer sends an email
+2. Email is analyzed and categorized
+3. Relevant documents are retrieved from the knowledge base
+4. A response draft is generated
+5. Confidence score is evaluated
+6. Response is sent or escalated
+7. Support ticket is created if human assistance is required
+
+Agent Details
+
+Step 1
+Agent Name: Email Classification Agent
+Responsibility: Identifies the customer request and assigns a category.
+Input: Customer Email
+Output: Category, Priority
+
+Step 2
+Agent Name: Document Retrieval Agent
+Responsibility: Retrieves relevant information from the knowledge base.
+Input: Query, Category
+Output: Relevant Documents
+
+Step 3
+Agent Name: Response Generation Agent
+Responsibility: Creates a response using customer details and retrieved content.
+Input: Email, Documents
+Output: Draft Response
+
+Step 4
+Agent Name: Evaluation Agent
+Responsibility: Reviews the generated response and calculates confidence.
+Input: Draft Response
+Output: Confidence Score, Decision
+
+Step 5
+Agent Name: Escalation Agent
+Responsibility: Creates a support ticket and forwards the case to a human agent if required.
+Input: Escalation Decision
+Output: Ticket Details

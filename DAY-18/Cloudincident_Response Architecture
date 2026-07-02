@@ -1,0 +1,51 @@
+1. ARCHITECTURAL CHOICE: MULTI-AGENT SYSTEM
+-------------------------------------------
+A Multi-Agent architecture is the most suitable approach for this scenario because:
+
+- Parallel Investigation: Monitoring metrics, deployment logs, and database activity are independent tasks that can be performed simultaneously.
+- Specialized Responsibilities: Each agent focuses on a specific infrastructure component, improving efficiency and accuracy.
+- Controlled Automation: Remediation actions are executed only after validating confidence levels or obtaining human approval when required.
+- Faster Resolution: Running investigations concurrently reduces overall incident response time.
+
+2. WORKFLOW DIAGRAM
+-------------------
+
+---------------------------------------------------------
+{System Alert Triggered}
+        ↓
+{Parallelly:
+  Agent A - Analyze Monitoring Metrics,
+  Agent B - Review Deployment Logs,
+  Agent C - Check Database Performance}
+        ↓
+{Central Orchestrator Collects Findings}
+        ↓
+{Evaluate Confidence Level}
+        ↓
+{If Confidence is Low → Human Approval}
+        ↓
+{Execute Remediation Action
+ (Rollback / Restart Service)}
+        ↓
+{Generate RCA and Notify Team}
+---------------------------------------------------------
+
+
+3. PROCESS STAGES
+-----------------
+
+Stage 1 – Parallel Diagnostics
+- Multiple agents independently investigate different parts of the infrastructure.
+
+Stage 2 – Centralized Analysis
+- Findings from all agents are consolidated to identify the root cause.
+
+Stage 3 – Decision and Remediation
+- The system evaluates confidence levels before executing corrective actions.
+
+Stage 4 – Reporting and Communication
+- A structured incident report is generated and shared with the operations team.
+
+4. EXPECTED OUTCOME
+-------------------
+The Multi-Agent design enables faster troubleshooting, improved reliability, controlled automation, and efficient incident resolution while maintaining operational safety.

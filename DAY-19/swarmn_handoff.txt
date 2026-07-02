@@ -1,0 +1,64 @@
+Overview
+
+A cybersecurity monitoring system receives an alert indicating potential abnormal activity. Since the root cause is initially unknown, the investigation must adapt as new information becomes available. Different specialists may need to examine logs, validate configurations, research vulnerabilities, and assess potential risks before a conclusion can be reached.
+
+Why Swarm / Handoff Fits This Scenario
+
+This pattern is ideal because the investigation does not follow a fixed route. The direction of the analysis changes according to the evidence uncovered during each stage. As new requirements emerge, responsibility can be transferred to the most suitable specialist without relying on a predetermined sequence.
+
+Core Characteristics
+
+• Flexible decision-making process
+• Investigation path evolves dynamically
+• Expertise-driven task delegation
+• No fixed execution order
+• Adaptive control transfer between specialists
+
+Evaluation of Alternative Approaches
+
+Round-Robin
+
+Round-Robin assumes that participants contribute in a repeating sequence. Such a structure is too rigid for investigations that continuously change direction.
+
+Selector
+
+Selector relies on a central coordinator to determine every subsequent action. In this case, specialists can directly pass responsibility when deeper expertise is required.
+
+GraphFlow
+
+GraphFlow performs best when workflows and transitions are defined beforehand. Security investigations rarely follow a predictable path.
+
+Magentic
+
+Although collaborative interactions are supported, the primary requirement here is seamless transfer of ownership between specialized participants as the investigation progresses.
+
+Illustrative Workflow
+
+Security Notification
+        │
+        ▼
+Evidence Collection
+        │
+        ▼
+Activity Examination
+        │
+        ▼
+Potential Risk Detected
+        │
+        ▼
+Vulnerability Assessment
+        │
+        ▼
+System Validation
+        │
+        ▼
+Impact Evaluation
+        │
+        ▼
+Remediation Action
+
+Conclusion
+
+Swarm / Handoff is the most appropriate pattern because it supports dynamic investigation workflows where responsibility shifts naturally to the specialist best equipped to handle the next stage.
+
+Final Answer: Swarm / Handoff

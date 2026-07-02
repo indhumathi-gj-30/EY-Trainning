@@ -1,0 +1,24 @@
+from transformers import pipeline
+
+# Create sentiment analysis model
+sentiment_model = pipeline("sentiment-analysis")
+
+# Sample business-related statements
+feedback_list = [
+    "The client was very satisfied with the delivery.",
+    "The project is significantly over budget and behind schedule.",
+    "The new regulatory framework presents both risks and opportunities.",
+    "The team delivered high-quality insights under tight deadlines."
+]
+
+# Analyze each statement and display results
+for text in feedback_list:
+    prediction = sentiment_model(text)
+
+    sentiment = prediction[0]["label"]
+    confidence = prediction[0]["score"]
+
+    print(f"Statement: {text}")
+    print(f"Result: {sentiment}")
+    print(f"Confidence Score: {confidence:.4f}")
+    print("-" * 50)

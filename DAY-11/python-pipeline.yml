@@ -1,0 +1,59 @@
+name: Execute PPG Data Pipeline
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  execute-pipeline-scripts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch repository contents
+        uses: actions/checkout@v4
+
+      - name: Initialize Python environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12" 
+
+      - name: Setup required packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Display repository structure
+        run: |
+          ls -R
+
+      - name: Execute data cleaning script
+        run: |
+          python "handling null values.py"
+
+      - name: Execute data visualization script
+        run: |
+          python "series plot.py"
+
+      - name: Execute signal decomposition script
+        run: |
+          python "decomposition.py"
+
+      - name: Execute feature extraction script
+        run: |
+          python "feature engineering.py"
+
+      - name: Execute extra analysis script
+        run: |
+          python "bonus task.py"
+
+      - name: Archive generated pipeline results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ppg-pipeline-results
+          path: |
+            *.png
+            *.csv
+            *.jpg
+            *.jpeg
+            *.txt

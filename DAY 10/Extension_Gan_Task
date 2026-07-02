@@ -1,0 +1,112 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
+
+class DeepGenerator(nn.Module):
+    def __init__(self, noise_dim):
+        super().__init__()
+        self.latent_layers = nn.Sequential(
+            nn.ConvTranspose2d(noise_dim, 256, kernel_size=7, stride=1, padding=0), 
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
+            nn.ConvTranspose2d(256, 128, kernel_size=4, stride=2, padding=1),      
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+            nn.ConvTranspose2d(128, 1, kernel_size=4, stride=2, padding=1),        
+            nn.Tanh()
+        )
+        
+    def forward(self, noise_vector):
+        return self.latent_layers(noise_vector)
+
+class DeepDiscriminator(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.evaluation_pipeline = nn.Sequential(
+            nn.Conv2d(1, 64, kernel_size=4, stride=2, padding=1),
+            nn.LeakyReLU(0.2),
+            nn.Conv2d(64, 128, kernel_size=4, stride=2, padding=1),
+            nn.BatchNorm2d(128),
+            nn.LeakyReLU(0.2),
+            nn.Flatten(),
+            nn.Linear(128 * 7 * 7, 1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, target_image):
+        return self.evaluation_pipeline(target_image)
+
+
+compute_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+BATCH_SIZE = 128
+LEARNING_RATE = 0.002
+LATENT_Z_DIM = 100
+TRAINING_EPOCHS = 10  
+
+data_normalization = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.5,), (0.5,))
+])
+
+target_mnist_corpus = datasets.MNIST(
+    root='./mnist_data_source', 
+    train=True, 
+    download=True, 
+    transform=data_normalization
+)
+
+data_stream_loader = DataLoader(
+    dataset=target_mnist_corpus, 
+    batch_size=BATCH_SIZE, 
+    shuffle=True
+)
+
+loss_estimator = nn.BCELoss()
+
+generator_instance = DeepGenerator(LATENT_Z_DIM).to(compute_device)
+discriminator_instance = DeepDiscriminator().to(compute_device)
+
+generator_optimizer = optim.Adam(generator_instance.parameters(), lr=LEARNING_RATE, betas=(0.5, 0.999))
+discriminator_optimizer = optim.Adam(discriminator_instance.parameters(), lr=LEARNING_RATE, betas=(0.5, 0.999))
+
+def display_generated_grid(synthetic_tensors):
+    detached_vectors = synthetic_tensors.detach().cpu()[:16]
+    grid_matrix = detached_vectors.view(16, 28, 28)
+
+    canvas_figure, coordinate_axes = plt.subplots(4, 4, figsize=(5, 5))
+    for index, selected_axis in enumerate(coordinate_axes.flatten()):
+        selected_axis.imshow(grid_matrix[index], cmap='gray')
+        selected_axis.axis('off')
+    plt.show()
+
+for current_epoch in range(TRAINING_EPOCHS):
+    for batch_index, (real_images, _) in enumerate(data_stream_loader):
+        current_batch_size = real_images.size(0)
+        real_images = real_images.to(compute_device)
+        latent_noise = torch.randn(current_batch_size, LATENT_Z_DIM, 1, 1).to(compute_device)
+        fake_images = generator_instance(latent_noise)
+        
+        disc_real_output = discriminator_instance(real_images).reshape(-1)
+        loss_disc_real = loss_estimator(disc_real_output, torch.ones_like(disc_real_output) * 0.9)
+        
+        
+        disc_fake_output = discriminator_instance(fake_images.detach()).reshape(-1)
+        loss_disc_fake = loss_estimator(disc_fake_output, torch.zeros_like(disc_fake_output))
+        
+        
+        total_disc_loss = (loss_disc_real + loss_disc_fake) / 2
+        discriminator_instance.zero_grad()
+        total_disc_loss.backward()
+        discriminator_optimizer.step()
+        
+        
+        adversarial_output = discriminator_instance(fake_images).reshape(-1)
+        total_gen_loss = loss_estimator(adversarial_output, torch.ones_like(adversarial_output))
+        
+        generator_instance.zero_grad()
+        total_gen_loss.backward()
+        generator_optimizer.step()
+    print(f"Epoch [{current_epoch}/{TRAINING_EPOCHS}] Loss D: {total_disc_loss:.4f}, Loss G: {total_gen_loss:.4f}")

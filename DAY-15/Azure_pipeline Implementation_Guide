@@ -1,0 +1,207 @@
+# Azure  Data Processing Pipeline
+
+## Solution Overview
+
+This implementation demonstrates how to build a scalable asynchronous processing pipeline on Microsoft Azure using managed cloud services.
+
+### Services Used
+
+* **Azure Service Bus** – Message queue for asynchronous communication
+* **Azure Cosmos DB** – NoSQL database for persistent storage
+* **Azure Container Registry (ACR)** – Docker image repository
+* **Azure Container Apps (ACA)** – Hosting environment for containerized applications
+
+### Workflow
+
+1. A FastAPI endpoint receives incoming requests.
+2. Request data is pushed into an Azure Service Bus queue.
+3. A background processing service consumes messages from the queue.
+4. Processed records are stored in Azure Cosmos DB.
+5. A retrieval endpoint fetches stored data and sends it to the Anthropic Claude API for enrichment.
+6. The enhanced response is returned to the client.
+
+# Step 1: Provision Azure Cosmos DB
+
+Azure Cosmos DB will serve as the primary document database for the application.
+
+### Configuration Steps
+
+1. Log in to the Azure Portal.
+2. Select **Create a Resource**.
+3. Search for **Azure Cosmos DB**.
+4. Choose **Azure Cosmos DB for NoSQL**.
+5. Click **Create**.
+
+### Resource Settings
+
+* Resource Group: `rg-pipeline-prod`
+* Account Name: `pipeline-cosmos-store`
+* Capacity Mode: `Serverless`
+* Region: Choose the nearest deployment region
+
+### Deployment
+
+1. Select **Review + Create**.
+
+2. Click **Create** to deploy the service.
+
+3. After deployment, navigate to:
+
+   **Settings → Keys**
+
+4. Save the following values:
+
+   * Account Endpoint URI
+   * Primary Key
+
+These credentials will be required by the application.
+
+
+# Step 2: Configure Azure Service Bus
+
+Azure Service Bus will manage asynchronous communication between services.
+
+### Create a Namespace
+
+1. Open Azure Portal.
+2. Select **Create a Resource**.
+3. Search for **Service Bus**.
+4. Click **Create**.
+
+### Namespace Configuration
+
+* Resource Group: `rg-pipeline-prod`
+* Namespace Name: `pipeline-servicebus`
+* Pricing Tier: `Standard`
+
+### Create Queue
+
+After deployment:
+
+1. Open the Service Bus Namespace.
+2. Navigate to **Queues**.
+3. Select **+ Queue**.
+4. Create a queue named:
+
+```text
+input-queue
+```
+
+5. Keep the default configuration and save.
+
+### Retrieve Connection String
+
+1. Open:
+
+```text
+Shared Access Policies
+```
+
+2. Select:
+
+```text
+RootManageSharedAccessKey
+3. Copy the primary connection string for application configuration.
+
+# Step 3: Deploy Azure Container App
+
+Azure Container Apps will host the FastAPI application.
+
+### Create Container App
+
+1. Open Azure Portal.
+2. Select **Create a Resource**.
+3. Search for **Container Apps**.
+4. Click **Create**.
+
+### Basic Configuration
+
+* Resource Group: `rg-pipeline-prod`
+* Application Name: `pipeline-fastapi-app`
+* Deployment Source: Container Image
+* Region: Preferred Azure Region
+
+### Additional Settings
+
+Configure:
+
+* Container settings
+* Networking and ingress
+* Scaling options
+* Tags (optional)
+
+### Deploy
+
+1. Click **Review + Create**.
+2. Select **Create** to launch the application.
+
+
+# Step 4: Create Azure Container Registry and Push Docker Image
+
+Azure Container Registry stores container images used by Azure Container Apps.
+
+### Create Registry
+
+1. Open Azure Portal.
+2. Select **Create a Resource**.
+3. Search for **Container Registry**.
+4. Click **Create**.
+
+### Registry Configuration
+
+* Resource Group: `rg-pipeline-prod`
+* Registry Name: `pipelineacr`
+* SKU: `Standard`
+
+Deploy the registry.
+
+### Enable Authentication
+
+After deployment:
+
+1. Open the registry resource.
+2. Navigate to:
+
+```text
+Settings → Access Keys
+```
+
+3. Enable:
+
+```text
+Admin User
+```
+
+4. Copy:
+
+* Registry Username
+* Registry Password
+
+### Push Docker Image
+
+Run the following commands from your local machine:
+
+```bash
+docker login pipelineacr.azurecr.io -u <USERNAME> -p <PASSWORD>
+
+docker build -t pipelineacr.azurecr.io/data-pipeline:v1 .
+
+docker push pipelineacr.azurecr.io/data-pipeline:v1
+
+
+The image will now be available for deployment through Azure Container Apps.
+
+# Resource Summary
+
+| Azure Resource        | Example Name          | Function                        |
+| --------------------- | --------------------- | ------------------------------- |
+| Resource Group        | rg-pipeline-prod      | Centralized resource management |
+| Cosmos DB Account     | pipeline-cosmos-store | NoSQL document storage          |
+| Service Bus Namespace | pipeline-servicebus   | Messaging infrastructure        |
+| Service Bus Queue     | input-queue           | Incoming request queue          |
+| Container Registry    | pipelineacr           | Docker image repository         |
+| Container App         | pipeline-fastapi-app  | Application hosting platform    |
+
+# Final Outcome
+
+After completing these steps, the solution will support an event-driven architecture where incoming requests are queued, processed asynchronously, stored in Cosmos DB, and enriched through external AI services before being returned to end users. This design improves scalability, reliability, and separation of responsibilities across application components.
